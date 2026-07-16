@@ -1,0 +1,39 @@
+---
+title: "My PDF Tools — Browser-Based Document Processing"
+date: "2026-04-10"
+description: "A fast, client-side application for merging, splitting, and compressing PDF files without uploading sensitive data to a server."
+tech: ["React", "PDF-lib", "Web Workers", "Tailwind CSS"]
+github: ""
+live: ""
+---
+
+## The Concept
+
+Most free PDF tools online force you to upload your sensitive documents to their servers. This introduces major privacy concerns for financial, legal, or personal documents. 
+
+**My PDF Tools** was built with a strict "Privacy First" architecture: all PDF processing happens directly in your browser's memory using WebAssembly and Javascript. No files are ever sent to a server.
+
+## Features
+
+- **Merge PDFs**: Combine multiple files into a single document, reorder pages via drag-and-drop.
+- **Split PDFs**: Extract specific page ranges or split a large PDF into individual pages.
+- **Watermarking**: Add text or image watermarks across all pages instantly.
+- **100% Client-Side**: Works completely offline after the initial page load.
+
+## Technical Deep Dive
+
+### PDF Manipulation in JS
+I utilized the `pdf-lib` library, which allows for robust manipulation of PDF buffers. Because modifying large PDFs (like 100+ page documents) can freeze the main UI thread in JavaScript, I had to architect a non-blocking solution.
+
+### Web Workers for Performance
+To keep the UI snappy (allowing animations and progress bars to render smoothly), I offloaded the heavy PDF processing tasks to **Web Workers**. 
+1. The main thread reads the file into an `ArrayBuffer`.
+2. The buffer is transferred to the Web Worker.
+3. The Worker runs the `pdf-lib` operations.
+4. The modified buffer is sent back to the main thread and converted into a Blob URL for download.
+
+### UX Design
+Processing files can take a few seconds on older devices. I built a comprehensive loading state system that gives users real-time feedback on which step of the process is currently executing (Reading → Processing → Finalizing).
+
+## Outcome
+A secure, blazing-fast utility app that handles complex document tasks without compromising user privacy.

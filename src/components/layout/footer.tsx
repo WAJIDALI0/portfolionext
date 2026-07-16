@@ -15,10 +15,12 @@ export function Footer() {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex gap-8">
-          <Link href="#about" className="text-sm hover:text-primary transition-colors">About</Link>
-          <Link href="#projects" className="text-sm hover:text-primary transition-colors">Projects</Link>
-          <Link href="#contact" className="text-sm hover:text-primary transition-colors">Contact</Link>
+        <div className="flex flex-wrap justify-center gap-6">
+          <Link href="/#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
+          <Link href="/#skills" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Skills</Link>
+          <Link href="/#experience" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Experience</Link>
+          <Link href="/#projects" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Projects</Link>
+          <Link href="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
         </div>
 
         {/* Social Links */}

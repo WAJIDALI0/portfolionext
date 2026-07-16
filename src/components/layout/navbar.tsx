@@ -14,6 +14,8 @@ export function Navbar() {
 
   const navLinks = [
     { name: "About", href: "/#about" },
+    { name: "Skills", href: "/#skills" },
+    { name: "Experience", href: "/#experience" },
     { name: "Projects", href: "/#projects" },
     { name: "Contact", href: "/#contact" },
     { name: "Resume", href: "/Wajid_Ali_Professional_Resume.pdf", external: true },

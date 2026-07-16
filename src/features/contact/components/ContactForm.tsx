@@ -2,46 +2,76 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useActionState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { contactFormSchema, ContactFormValues } from "../schema";
 import { submitContactForm } from "@/app/actions/contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, AlertCircle, Send } from "lucide-react";
+import { CheckCircle2, AlertCircle, Send, Loader2 } from "lucide-react";
 
 export function ContactForm() {
-  const [state, formAction, isPending] = useActionState(submitContactForm, null);
-  
+  const [state, setState] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
+  const [isPending, setIsPending] = useState(false);
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
+    defaultValues: { name: "", email: "", message: "" },
   });
 
+  // Auto-dismiss the success/error message after 5 seconds
   useEffect(() => {
-    if (state?.success) {
-      form.reset();
+    if (state?.success || state?.error) {
+      const timer = setTimeout(() => {
+        setState(null);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
-  }, [state, form]);
+  }, [state]);
+
+  // Submit via react-hook-form → call server action programmatically
+  const onSubmit = async (data: ContactFormValues) => {
+    setIsPending(true);
+    setState(null);
+
+    // Build FormData so the server action receives it correctly
+    const formData = new FormData();
+    formData.set("name", data.name);
+    formData.set("email", data.email);
+    formData.set("message", data.message);
+
+    try {
+      const result = await submitContactForm(null, formData);
+      setState(result);
+      if (result.success) {
+        form.reset();
+      }
+    } catch {
+      setState({ success: false, error: "An unexpected error occurred. Please try again." });
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
-    <form action={formAction} className="space-y-6 w-full">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <Input 
-            {...form.register("name")} 
-            placeholder="Full Name" 
+          <Input
+            {...form.register("name")}
+            placeholder="Full Name"
             className="h-12 bg-background/50 backdrop-blur-sm transition-all focus:bg-background"
           />
           {form.formState.errors.name && (
             <p className="text-xs text-red-500 font-medium ml-1">{form.formState.errors.name.message}</p>
           )}
         </div>
-        
+
         <div className="space-y-2">
-          <Input 
-            {...form.register("email")} 
-            placeholder="Email Address" 
+          <Input
+            {...form.register("email")}
+            placeholder="Email Address"
             className="h-12 bg-background/50 backdrop-blur-sm transition-all focus:bg-background"
           />
           {form.formState.errors.email && (
@@ -51,28 +81,26 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <Textarea 
-          {...form.register("message")} 
-          placeholder="Tell me about your project or inquiry..." 
+        <Textarea
+          {...form.register("message")}
+          placeholder="Tell me about your project or inquiry..."
+          rows={5}
           className="resize-none bg-background/50 backdrop-blur-sm transition-all focus:bg-background"
         />
         {form.formState.errors.message && (
           <p className="text-xs text-red-500 font-medium ml-1">{form.formState.errors.message.message}</p>
         )}
       </div>
-      
-      <Button 
-        disabled={isPending} 
-        type="submit" 
+
+      <Button
+        disabled={isPending}
+        type="submit"
         size="lg"
         className="w-full sm:w-auto h-12 px-8 font-medium shadow-lg shadow-primary/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
         {isPending ? (
-          <span className="flex items-center">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+          <span className="flex items-center gap-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
             Sending...
           </span>
         ) : (
@@ -106,11 +134,6 @@ export function ContactForm() {
             <div className="font-medium text-sm flex-1">
               <p className="mb-1 font-bold">Delivery Failed</p>
               <p className="opacity-90">{state.error}</p>
-              {state.error.includes("onboarding@resend.dev") && (
-                 <p className="text-xs mt-2 opacity-80 border-t border-red-200/50 pt-2">
-                   Developer Note: Resend's onboarding email only allows sending emails to the verified email address attached to the Resend account.
-                 </p>
-              )}
             </div>
           </motion.div>
         )}

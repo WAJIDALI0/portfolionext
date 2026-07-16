@@ -1,0 +1,38 @@
+---
+title: "AI Omni-Creator — Multi-Modal Generation SaaS"
+date: "2026-05-20"
+description: "A comprehensive AI generation platform that unifies text, image, and code generation into a single intuitive interface."
+tech: ["React", "Node.js", "OpenAI", "Replicate", "MongoDB"]
+github: ""
+live: ""
+---
+
+## The Problem
+
+Creative professionals and developers often juggle multiple AI tools—ChatGPT for text, Midjourney/DALL-E for images, and specialized models for code. This fragmentation kills productivity and requires managing multiple subscriptions.
+
+**AI Omni-Creator** solves this by aggregating top-tier AI models into one unified dashboard.
+
+## Platform Features
+
+- **Text Studio**: Powered by GPT-4o, optimized for marketing copy, blog posts, and brainstorming.
+- **Image Studio**: Integrates with Stable Diffusion via Replicate API for high-quality, prompt-driven image generation.
+- **Code Studio**: Specialized IDE-like environment for code generation, debugging, and code explanation.
+- **Project Workspaces**: Users can save generated assets into folders, making it easy to retrieve and combine text and images later.
+
+## Technical Implementation
+
+### The Backend
+The API is built on **Node.js/Express**. I designed a generic model handler interface that allows me to hot-swap AI providers (e.g., switching from OpenAI to Anthropic) without rewriting route logic.
+
+### Rate Limiting & Webhooks
+Because AI APIs are expensive and slow, I implemented:
+- **Redis-based rate limiting** to prevent abuse.
+- **Webhooks** for image generation. Instead of holding the HTTP request open for 20 seconds while Stable Diffusion runs, the server responds immediately, and the client listens for a WebSocket or polling update when the image is ready.
+
+### Frontend Architecture
+Built in React with Tailwind CSS. I used Context API for state management, specifically for handling the global "Remaining Tokens" state that updates across all tools in real-time.
+
+## Key Learnings
+
+Handling asynchronous AI generation at scale is completely different from standard CRUD apps. Designing a UI that feels responsive while waiting for 15-second API responses required heavy use of skeleton loaders, optimistic UI updates, and intelligent polling.
