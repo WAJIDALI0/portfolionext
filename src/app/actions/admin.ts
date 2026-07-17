@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function markAsRead(id: string) {
+export async function markAsRead(id: string, formData?: FormData) {
   const supabase = await createClient();
   
   const { error } = await supabase
@@ -21,7 +21,7 @@ export async function markAsRead(id: string) {
   return { success: true };
 }
 
-export async function deleteMessage(id: string) {
+export async function deleteMessage(id: string, formData?: FormData) {
   const supabase = await createClient();
   
   const { error } = await supabase
