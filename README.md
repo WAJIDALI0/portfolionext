@@ -135,3 +135,5 @@ content/
 ## 📝 License
 
 This project is licensed under the MIT License.
+
+<!-- Force Vercel Build -->
