@@ -13,12 +13,11 @@ export async function markAsRead(id: string, formData?: FormData) {
 
   if (error) {
     console.error("Failed to mark as read", error);
-    return { success: false, error: error.message };
+    return;
   }
 
   revalidatePath("/admin/contacts");
   revalidatePath("/admin/dashboard");
-  return { success: true };
 }
 
 export async function deleteMessage(id: string, formData?: FormData) {
@@ -31,10 +30,9 @@ export async function deleteMessage(id: string, formData?: FormData) {
 
   if (error) {
     console.error("Failed to delete message", error);
-    return { success: false, error: error.message };
+    return;
   }
 
   revalidatePath("/admin/contacts");
   revalidatePath("/admin/dashboard");
-  return { success: true };
 }
