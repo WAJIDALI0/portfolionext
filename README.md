@@ -37,16 +37,16 @@
 ## 🚀 Getting Started
 
 ### 1. Clone & Install Dependencies
-\`\`\`bash
+```bash
 git clone <repository-url>
 cd portfolionext
 npm install
-\`\`\`
+```
 
 ### 2. Environment Variables
-Create a \`.env.local\` file in the root directory and add your keys:
+Create a `.env.local` file in the root directory and add your keys:
 
-\`\`\`env
+```env
 # Supabase Configuration (REST API)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -120,7 +120,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📁 Project Structure
 
-\`\`\`text
+```text
 src/
 ├── app/              # Next.js App Router (pages, layouts, server actions)
 ├── components/       # Shared UI components (navbar, footer, ui elements)
@@ -130,7 +130,7 @@ src/
 └── styles/           # Global styles and Tailwind entry points
 content/
 └── projects/         # MDX files containing detailed case studies
-\`\`\`
+```
 
 ## 📝 License
 
