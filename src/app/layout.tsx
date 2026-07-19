@@ -6,6 +6,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import StoreProvider from "@/lib/store/StoreProvider";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,10 +41,13 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <ScrollToTop />
+          <StoreProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <ScrollToTop />
+            <ChatWidget />
+          </StoreProvider>
         </ThemeProvider>
       </body>
     </html>

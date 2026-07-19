@@ -90,8 +90,108 @@ export async function login(formData: FormData) {
   // On successful login, clear the rate limit counter for this IP
   loginRateLimitMap.delete(ip);
 
+  // 4. Check if MFA (2FA) is required
+  const { data: mfaData, error: mfaError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (mfaError) {
+    return { error: "Failed to verify authentication level." };
+  }
+
+  if (mfaData.currentLevel === 'aal1' && mfaData.nextLevel === 'aal2') {
+    // User has MFA enrolled, they need to enter their TOTP code
+    return { mfaRequired: true };
+  }
+
   revalidatePath("/", "layout");
   redirect("/admin/dashboard");
+}
+
+export async function verifyTotp(formData: FormData) {
+  const code = formData.get("code") as string;
+  const supabase = await createClient();
+  
+  const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+  if (factorsError || !factors.totp || factors.totp.length === 0) {
+    return { error: "No 2FA authenticator found for this account." };
+  }
+
+  const totpFactor = factors.totp[0];
+
+  const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: totpFactor.id });
+  if (challengeError) return { error: "Failed to initiate 2FA challenge." };
+
+  const { error: verifyError } = await supabase.auth.mfa.verify({
+    factorId: totpFactor.id,
+    challengeId: challengeData.id,
+    code,
+  });
+
+  if (verifyError) return { error: "Invalid 6-digit code. Please try again." };
+
+  revalidatePath("/", "layout");
+  redirect("/admin/dashboard");
+}
+
+export async function enrollMfa() {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Check for existing factors
+    const { data: factors, error: listError } = await supabase.auth.mfa.listFactors();
+    
+    if (listError) {
+      console.error("listFactors error:", listError);
+      return { error: listError.message };
+    }
+
+    if (factors?.totp && factors.totp.length > 0) {
+      const existingFactor = factors.totp[0];
+      
+      if (existingFactor.status === 'verified') {
+        return { error: "2FA is already fully enabled on this account." };
+      }
+      
+      if (existingFactor.status === 'unverified') {
+        const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: existingFactor.id });
+        if (unenrollError) {
+          console.error("unenroll error:", unenrollError);
+          // Don't return here, try to enroll anyway
+        }
+      }
+    }
+
+    // 2. Enroll a brand new factor
+    const { data, error } = await supabase.auth.mfa.enroll({ 
+      factorType: "totp",
+      friendlyName: "Admin_" + Date.now()
+    });
+    
+    if (error) {
+      console.error("enroll error:", error);
+      return { error: error.message };
+    }
+    
+    return { id: data.id, uri: data.totp.uri, secret: data.totp.secret };
+  } catch (err: any) {
+    console.error("enrollMfa catch error:", err);
+    return { error: err.message || "An unexpected error occurred during 2FA setup." };
+  }
+}
+
+export async function verifyEnrollment(factorId: string, code: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.mfa.challenge({ factorId });
+  if (error) return { error: error.message };
+  
+  const { error: verifyError } = await supabase.auth.mfa.verify({
+    factorId,
+    challengeId: data.id,
+    code,
+  });
+  
+  if (verifyError) return { error: "Invalid 6-digit code." };
+  
+  revalidatePath("/", "layout");
+  return { success: true };
 }
 
 export async function logout() {

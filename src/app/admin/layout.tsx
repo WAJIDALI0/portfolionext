@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Users, LogOut, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, ArrowLeft, MessageCircle, ShieldAlert } from "lucide-react";
 import { logout } from "@/app/login/actions";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -29,6 +29,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           >
             <Users className="h-4 w-4" />
             Contact Submissions
+          </Link>
+          <Link
+            href="/admin/chat"
+            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Live Chat
+          </Link>
+          <Link
+            href="/admin/setup-2fa"
+            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            <ShieldAlert className="h-4 w-4" />
+            Setup 2FA
           </Link>
         </nav>
 
