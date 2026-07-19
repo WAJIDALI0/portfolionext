@@ -68,6 +68,19 @@ export function ChatWidget() {
           }
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "chat_messages",
+          filter: `session_id=eq.${id}`,
+        },
+        () => {
+          // If admin deletes the chat, instantly clear the visitor's UI
+          setMessages([]);
+        }
+      )
       .subscribe();
 
     return () => {
