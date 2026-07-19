@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { enrollMfa, verifyEnrollment } from "@/app/login/actions";
+import { useEffect, useState } from "react";
+import { enrollMfa, verifyEnrollment, checkMfaStatus, disableMfa } from "@/app/login/actions";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,12 @@ export default function Setup2FAPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState<boolean | null>(null);
+  const [isDisabling, setIsDisabling] = useState(false);
+
+  useEffect(() => {
+    checkMfaStatus().then(res => setIsEnrolled(res.isEnrolled));
+  }, []);
 
   const startSetup = async () => {
     setIsLoading(true);
@@ -59,6 +65,20 @@ export default function Setup2FAPage() {
     }
   };
 
+  const handleDisable = async () => {
+    setIsDisabling(true);
+    try {
+      await disableMfa();
+      setIsEnrolled(false);
+      setSuccess(false);
+      setQrCodeUrl(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDisabling(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
@@ -72,15 +92,21 @@ export default function Setup2FAPage() {
       </div>
 
       <div className="bg-card border border-border/50 rounded-xl p-8 shadow-sm">
-        {success ? (
-          <div className="text-center space-y-4">
+        {isEnrolled === null ? (
+          <div className="text-center py-12 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
+        ) : isEnrolled || success ? (
+          <div className="text-center space-y-4 py-8">
             <div className="mx-auto w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-4">
               <ShieldCheck className="h-8 w-8" />
             </div>
-            <h2 className="text-2xl font-bold">2FA is successfully enabled!</h2>
-            <p className="text-muted-foreground">
-              Your account is now secured. The next time you log in, you will be required to enter a code from your authenticator app.
+            <h2 className="text-2xl font-bold">2FA is currently Enabled</h2>
+            <p className="text-muted-foreground mb-8">
+              Your account is fully secured. You can disable it if you need to let an evaluator test the system.
             </p>
+            <Button onClick={handleDisable} disabled={isDisabling} variant="destructive" className="mt-4">
+              {isDisabling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Disable 2FA Temporarily
+            </Button>
           </div>
         ) : !qrCodeUrl ? (
           <div className="text-center space-y-6 py-8">

@@ -200,3 +200,25 @@ export async function logout() {
   revalidatePath("/", "layout");
   redirect("/login");
 }
+
+export async function checkMfaStatus() {
+  const supabase = await createClient();
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  if (factors?.totp && factors.totp.length > 0) {
+    return { isEnrolled: factors.totp[0].status === 'verified' };
+  }
+  return { isEnrolled: false };
+}
+
+export async function disableMfa() {
+  const supabase = await createClient();
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  
+  if (factors?.totp) {
+    for (const factor of factors.totp) {
+      await supabase.auth.mfa.unenroll({ factorId: factor.id });
+    }
+  }
+  revalidatePath("/", "layout");
+  return { success: true };
+}
