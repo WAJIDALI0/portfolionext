@@ -105,7 +105,7 @@ export async function login(formData: FormData) {
   redirect("/admin/dashboard");
 }
 
-export async function verifyTotp(formData: FormData) {
+export async function verifyTotp(prevState: any, formData: FormData) {
   const code = formData.get("code") as string;
   const supabase = await createClient();
   
