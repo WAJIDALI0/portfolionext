@@ -22,6 +22,13 @@
 - **Backend Integration**: 
   - Submissions and admin auth powered by **Supabase** via `@supabase/ssr` and `@supabase/supabase-js`.
   - Real-time email notifications are sent via the **Resend API**.
+- **Real-time Live Chat**:
+  - Global UI state managed flawlessly via **Redux Toolkit**.
+  - Real-time bi-directional messaging powered by **Supabase WebSockets**.
+- **Gemini AI Integration**: 
+  - Dual-mode chat widget allows visitors to talk to a live admin or an **AI Assistant** powered by `gemini-2.0-flash`.
+- **Advanced Admin Security**:
+  - Enterprise-grade **Two-Factor Authentication (TOTP)** via Supabase Native MFA and Google Authenticator.
 - **Interactive UI Components**: Leveraging `framer-motion` for fluid scroll animations, page transitions, and interactive elements.
 
 ## 🛠 Tech Stack
@@ -29,8 +36,10 @@
 - **Framework**: [Next.js 16](https://nextjs.org/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Database & Auth**: [Supabase](https://supabase.com/) & `@supabase/ssr`
+- **Database & Auth**: [Supabase](https://supabase.com/) & `@supabase/ssr` (Includes Native MFA)
 - **Email Service**: [Resend](https://resend.com/)
+- **AI Integration**: [Google Gemini 2.0 API](https://ai.google.dev/)
+- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Content**: MDX (Markdown + JSX)
 
@@ -58,6 +67,9 @@ RESEND_TARGET_EMAIL=your-email@example.com
 # Security Configuration
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_site_key_here
 RECAPTCHA_SECRET_KEY=your_secret_key_here
+
+# AI Configuration
+GEMINI_API_KEY=AIzaSy_your_gemini_key_here
 ```
 
 ### 3. Database & Auth Setup (Supabase)

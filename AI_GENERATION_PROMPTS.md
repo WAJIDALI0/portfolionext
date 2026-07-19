@@ -98,4 +98,19 @@ Now we will build the private backend infrastructure so the owner can securely m
 4. **Data View Page (`/admin/contacts`):** Build a beautiful table/card list that displays all entries from the `contact_submissions` table. Include Server Actions to "Mark as Read" and "Delete" (with a loading spinner on the delete button).
 
 *Note to AI: Remind the user to enable Row Level Security (RLS) in their Supabase database to allow `insert` for anonymous users, and `select, update, delete` for authenticated users.*
-\`\`\`
+```
+
+---
+
+## Prompt 6: The Advanced Bonus Features (Redux, Sockets, AI, 2FA)
+
+**Copy and paste this into your AI:**
+
+```text
+Let's implement the final advanced bonus features to make this portfolio an absolute masterpiece.
+
+1. **Redux Toolkit Integration:** Install `@reduxjs/toolkit` and `react-redux`. Implement a global UI slice to manage the state of the Chat Widget (open/close) and track unread message counts across the app.
+2. **Real-time Live Chat (Supabase Realtime):** Build a floating Chat Widget on the public site and an Admin Chat UI in the dashboard. Use Supabase Realtime channels to broadcast messages instantly between visitors and the admin without page reloads. Include a feature for the admin to permanently end/delete a chat session.
+3. **Gemini AI Integration:** Add an "AI Bot" toggle to the visitor Chat Widget. When activated, route visitor messages to a Server Action that securely queries the `gemini-2.0-flash` model. Pre-prompt the AI to act as my personal portfolio assistant using data from my resume.
+4. **Two-Factor Authentication (2FA):** Secure the Admin Login by integrating Supabase Native MFA. Generate a TOTP QR code using the `qrcode` library so I can scan it with Google Authenticator. Enforce MFA verification upon login.
+```
