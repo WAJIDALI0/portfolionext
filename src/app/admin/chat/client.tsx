@@ -116,12 +116,32 @@ export function AdminChatClient({ initialSessions }: { initialSessions: string[]
     await supabase.from("chat_messages").delete().eq("session_id", sessionToDelete);
   };
 
+  const deleteAllSessions = async () => {
+    if (!confirm("Are you sure you want to delete ALL chat history? This cannot be undone.")) return;
+    
+    // Optimistically update UI
+    setSessions([]);
+    setActiveSession(null);
+    setMessages([]);
+
+    // Delete from Supabase backend
+    await supabase.from("chat_messages").delete().not("id", "is", null);
+  };
+
   return (
     <div className="flex h-full">
       {/* Sidebar / Session List */}
       <div className="w-1/3 border-r border-border/50 bg-muted/10 overflow-y-auto">
-        <div className="p-4 border-b border-border/50">
+        <div className="p-4 border-b border-border/50 flex justify-between items-center">
           <h3 className="font-semibold text-foreground">Active Visitors</h3>
+          {sessions.length > 0 && (
+            <button 
+              onClick={deleteAllSessions}
+              className="text-xs text-red-500 hover:text-red-600 hover:underline"
+            >
+              Clear All
+            </button>
+          )}
         </div>
         {sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground p-4">No active chats.</p>
@@ -136,11 +156,18 @@ export function AdminChatClient({ initialSessions }: { initialSessions: string[]
                 }`}
               >
                 <UserCircle2 className="h-8 w-8 text-muted-foreground" />
-                <div className="overflow-hidden">
+                <div className="overflow-hidden flex-1">
                   <p className="text-sm font-medium text-foreground truncate">
                     Visitor {session.split("_")[1]}
                   </p>
                 </div>
+                <button
+                  onClick={(e) => deleteSession(e, session)}
+                  className="text-muted-foreground hover:text-red-500 transition-colors opacity-50 hover:opacity-100"
+                  title="Delete this chat"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </button>
             ))}
           </div>
