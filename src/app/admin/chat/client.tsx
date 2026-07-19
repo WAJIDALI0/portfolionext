@@ -148,10 +148,12 @@ export function AdminChatClient({ initialSessions }: { initialSessions: string[]
         ) : (
           <div className="flex flex-col">
             {sessions.map((session) => (
-              <button
+              <div
                 key={session}
+                role="button"
+                tabIndex={0}
                 onClick={() => setActiveSession(session)}
-                className={`flex items-center gap-3 p-4 text-left transition-colors border-b border-border/50 ${
+                className={`flex items-center gap-3 p-4 text-left transition-colors border-b border-border/50 cursor-pointer ${
                   activeSession === session ? "bg-primary/10 border-l-4 border-l-primary" : "hover:bg-muted/50"
                 }`}
               >
@@ -168,7 +170,7 @@ export function AdminChatClient({ initialSessions }: { initialSessions: string[]
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
-              </button>
+              </div>
             ))}
           </div>
         )}
