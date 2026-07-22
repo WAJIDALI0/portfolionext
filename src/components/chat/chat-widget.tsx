@@ -21,13 +21,13 @@ export function ChatWidget() {
   const dispatch = useAppDispatch();
   const isChatOpen = useAppSelector((state) => state.ui.isChatOpen);
   const unreadCount = useAppSelector((state) => state.ui.unreadChatMessages);
-  
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [isAiMode, setIsAiMode] = useState(false);
   const [isAiTyping, setIsAiTyping] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
@@ -42,7 +42,7 @@ export function ChatWidget() {
         .select("*")
         .eq("session_id", id)
         .order("created_at", { ascending: true });
-      
+
       if (data) setMessages(data as ChatMessage[]);
     };
     fetchMessages();
@@ -61,7 +61,7 @@ export function ChatWidget() {
         (payload) => {
           const newMsg = payload.new as ChatMessage;
           setMessages((prev) => [...prev, newMsg]);
-          
+
           // If message is from admin and chat is closed, increment unread count
           if (newMsg.sender_role === "admin") {
             dispatch(incrementUnreadMessages());
@@ -119,12 +119,12 @@ export function ChatWidget() {
         created_at: new Date().toISOString()
       };
       setMessages((prev) => [...prev, localVisitorMsg]);
-      
+
       // 2. Call Gemini API
       setIsAiTyping(true);
       const res = await chatWithGemini(content);
       setIsAiTyping(false);
-      
+
       // 3. Add AI response locally
       const aiResponseMsg: ChatMessage = {
         id: "ai_" + Date.now(),
@@ -134,7 +134,7 @@ export function ChatWidget() {
         created_at: new Date().toISOString()
       };
       setMessages((prev) => [...prev, aiResponseMsg]);
-      
+
     } else {
       // Standard Live Chat via Supabase
       await supabase.from("chat_messages").insert({
@@ -173,7 +173,7 @@ export function ChatWidget() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              
+
               {/* AI Toggle Switch */}
               <div className="flex items-center gap-2 bg-primary-foreground/10 p-1 rounded-lg w-full">
                 <button
@@ -197,8 +197,8 @@ export function ChatWidget() {
                 <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
                   <MessageCircle className="h-10 w-10 mb-2 opacity-20" />
                   <p className="text-sm text-center px-4">
-                    {isAiMode 
-                      ? "Hi! I'm an AI trained on Wajid's resume. Ask me about his experience!" 
+                    {isAiMode
+                      ? "Hi! I'm an AI trained on Wajid's resume. Ask me about his experience!"
                       : "Send a message to start chatting!"}
                   </p>
                 </div>
@@ -208,24 +208,22 @@ export function ChatWidget() {
                     key={msg.id}
                     className={`flex gap-2 items-end ${msg.sender_role === "visitor" ? "flex-row-reverse" : "flex-row"}`}
                   >
-                    <div className={`flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center shadow-sm ${
-                      msg.sender_role === "visitor" ? "bg-primary text-primary-foreground" :
+                    <div className={`flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center shadow-sm ${msg.sender_role === "visitor" ? "bg-primary text-primary-foreground" :
                       msg.sender_role === "ai" ? "bg-purple-500 text-white" :
-                      "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                    }`}>
+                        "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                      }`}>
                       {msg.sender_role === "visitor" ? <User className="h-3.5 w-3.5" /> :
-                       msg.sender_role === "ai" ? <Bot className="h-3.5 w-3.5" /> :
-                       <Shield className="h-3.5 w-3.5" />}
+                        msg.sender_role === "ai" ? <Bot className="h-3.5 w-3.5" /> :
+                          <Shield className="h-3.5 w-3.5" />}
                     </div>
 
                     <div
-                      className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${
-                        msg.sender_role === "visitor"
-                          ? "bg-primary text-primary-foreground rounded-br-sm"
-                          : msg.sender_role === "ai" 
-                            ? "bg-purple-500/10 border border-purple-500/20 text-foreground rounded-bl-sm shadow-sm"
-                            : "bg-card border border-border/50 text-foreground rounded-bl-sm shadow-sm"
-                      }`}
+                      className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${msg.sender_role === "visitor"
+                        ? "bg-primary text-primary-foreground rounded-br-sm"
+                        : msg.sender_role === "ai"
+                          ? "bg-purple-500/10 border border-purple-500/20 text-foreground rounded-bl-sm shadow-sm"
+                          : "bg-card border border-border/50 text-foreground rounded-bl-sm shadow-sm"
+                        }`}
                     >
                       {msg.content}
                     </div>
@@ -278,7 +276,7 @@ export function ChatWidget() {
         className="bg-primary text-primary-foreground p-4 rounded-full shadow-lg relative flex items-center justify-center"
       >
         {isChatOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-        
+
         {/* Unread Badge */}
         {!isChatOpen && unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-background animate-in zoom-in">
