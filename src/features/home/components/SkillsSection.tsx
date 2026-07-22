@@ -35,9 +35,9 @@ const skillCategories = [
     name: "AI & Emerging",
     skills: [
       { name: "OpenAI / LLM APIs", level: 80 },
-      { name: "Prompt Engineering", level: 78 },
+      { name: "AI Agents (Cursor, Antigravity)", level: 85 },
+      { name: "Vibe Coding (Lovable, CodeX)", level: 78 },
       { name: "n8n Automation", level: 72 },
-      { name: "Python (Data/AI)", level: 65 },
     ],
   },
 ];

@@ -22,7 +22,7 @@ export async function chatWithGemini(userMessage: string) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
     const fullPrompt = `${SYSTEM_PROMPT}\n\nVisitor says: "${userMessage}"\n\nAI Response:`;
 
